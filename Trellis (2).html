@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trellis — Uplyfted Cannabis Co.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --black: #080808;
+    --white: #f5f5f0;
+    --gray1: #111111;
+    --gray2: #1a1a1a;
+    --gray3: #2a2a2a;
+    --gray4: #444444;
+    --gray5: #888888;
+    --green: #22c55e;
+    --green-dim: #052e16;
+    --amber: #f59e0b;
+    --amber-dim: #1c1007;
+    --red: #ef4444;
+    --red-dim: #1c0505;
+    --blue: #3b82f6;
+    --blue-dim: #0c1a3a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,8,8,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray2);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 54px;
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; letter-spacing: .08em; }
+  .nav-tabs { display: flex; gap: 2px; }
+  .nav-tab {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: none; background: none; color: var(--gray5);
+    font-family: 'DM Sans', sans-serif; letter-spacing: .04em; transition: all .15s;
+  }
+  .nav-tab:hover { color: var(--white); background: var(--gray1); }
+  .nav-tab.active { color: var(--white); background: var(--gray2); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-badge {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    background: var(--green-dim); color: var(--green);
+    padding: 3px 10px; border-radius: 20px; letter-spacing: .06em;
+  }
+
+  /* PAGES */
+  .page { display: none; padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* DASHBOARD */
+  .hb-card {
+    background: var(--white); color: var(--black);
+    border-radius: 14px; padding: 28px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .hb-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #666; margin-bottom: 6px; }
+  .hb-number { font-family: 'Syne', sans-serif; font-size: 60px; font-weight: 800; line-height: 1; color: var(--black); }
+  .hb-sub { font-size: 13px; color: #666; margin-top: 6px; }
+  .hb-status {
+    padding: 10px 20px; border-radius: 30px; font-size: 12px; font-weight: 700;
+    letter-spacing: .06em; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-bottom: 20px; }
+  .kpi { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 14px 16px; }
+  .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--gray4); margin-bottom: 6px; }
+  .kpi-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; }
+  .kpi-sub { font-size: 11px; color: var(--gray4); margin-top: 3px; }
+
+  .section-hdr { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gray4); margin: 24px 0 10px; }
+
+  .card { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; }
+  .card:hover { border-color: var(--gray3); }
+
+  /* BUTTONS */
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    cursor: pointer; border: 1px solid var(--gray3); background: var(--gray1);
+    color: var(--white); font-family: 'DM Sans', sans-serif; letter-spacing: .04em; transition: all .12s;
+  }
+  .btn:hover { background: var(--white); color: var(--black); border-color: var(--white); }
+  .btn-primary { background: var(--white); color: var(--black); border-color: var(--white); }
+  .btn-primary:hover { background: #ddd; }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-danger { border-color: var(--red-dim); color: var(--gray4); }
+  .btn-danger:hover { background: var(--red); color: var(--white); border-color: var(--red); }
+  .btn-green { background: var(--green); color: var(--black); border-color: var(--green); font-weight: 700; }
+  .btn-green:hover { background: #16a34a; }
+
+  /* FORMS */
+  .form-panel { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+  .form-row { display: grid; gap: 10px; margin-bottom: 10px; }
+  .fg label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gray4); display: block; margin-bottom: 4px; }
+  .fg input, .fg select, .fg textarea {
+    width: 100%; background: var(--black); border: 1px solid var(--gray3);
+    border-radius: 6px; padding: 8px 10px; color: var(--white); font-size: 13px; font-family: 'DM Sans', sans-serif;
+  }
+  .fg input:focus, .fg select:focus { outline: none; border-color: var(--gray5); }
+  .fg input::placeholder { color: var(--gray3); }
+  .fg select option { background: var(--black); }
+
+  /* TABS */
+  .tab-strip { display: flex; gap: 2px; margin-bottom: 16px; background: var(--gray1); border-radius: 8px; padding: 3px; border: 1px solid var(--gray2); }
+  .tab { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--gray4); border: none; background: none; font-family: 'DM Sans', sans-serif; letter-spacing: .04em; transition: all .12s; }
+  .tab.active { background: var(--white); color: var(--black); }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+  .b-green { background: var(--green-dim); color: var(--green); }
+  .b-lime { background: #0f2a05; color: #86efac; }
+  .b-amber { background: var(--amber-dim); color: var(--amber); }
+  .b-red { background: var(--red-dim); color: var(--red); }
+  .b-gray { background: #141414; color: var(--gray4); }
+  .b-blue { background: var(--blue-dim); color: var(--blue); }
+  .b-white { background: var(--white); color: var(--black); }
+  .b-rosin { background: #1a0d00; color: #fb923c; }
+  .b-hash { background: #0d0014; color: #c084fc; }
+
+  /* ROWS */
+  .acct-row, .order-card-header, .spark-row, .vendor-row, .rep-row {
+    background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 7px; display: grid; align-items: center; gap: 10px;
+  }
+  .acct-row:hover, .spark-row:hover, .vendor-row:hover { border-color: var(--gray3); }
+
+  .days-hot { color: var(--green); font-weight: 700; }
+  .days-warm { color: var(--amber); font-weight: 700; }
+  .days-cold { color: var(--red); font-weight: 700; }
+  .days-dead { color: var(--gray3); font-weight: 700; }
+
+  .col-hdr { display: grid; gap: 10px; padding: 0 16px 6px; font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--gray3); }
+
+  .empty { text-align: center; padding: 48px; color: var(--gray3); font-size: 13px; }
+  .sku-summary { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+
+  /* ORDER CARDS */
+  .order-card { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  .order-card:hover { border-color: var(--gray3); }
+  .order-card-header { background: none; border: none; border-radius: 0; margin: 0; cursor: pointer; grid-template-columns: minmax(0,1fr) auto auto auto auto; }
+  .order-body { border-top: 1px solid var(--gray2); padding: 12px 16px; display: none; }
+  .order-body.open { display: block; }
+  .sku-row { display: grid; grid-template-columns: minmax(0,1fr) 70px 70px 80px; gap: 8px; padding: 7px 0; border-bottom: 1px solid #0f0f0f; font-size: 12px; align-items: center; }
+  .sku-row:last-child { border-bottom: none; }
+
+  /* MENU */
+  .menu-section { padding: 0 0 24px; }
+  .menu-section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--gray2); }
+  .menu-section-name { font-size: 13px; font-weight: 700; }
+  .menu-section-price { font-size: 11px; color: var(--gray5); font-family: 'DM Mono', monospace; }
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 8px; }
+  .product-card { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 14px; transition: border-color .12s; }
+  .product-card:hover { border-color: var(--gray3); }
+  .p-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+  .p-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  .p-thc { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+  .p-thc span { font-size: 10px; color: var(--gray5); margin-left: 2px; }
+  .qty-ctrl { display: flex; align-items: center; gap: 8px; }
+  .qty-btn { width: 26px; height: 26px; border-radius: 5px; border: 1px solid var(--gray3); background: var(--gray2); color: var(--white); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .12s; }
+  .qty-btn:hover { background: var(--white); color: var(--black); }
+  .qty-num { font-size: 13px; font-weight: 700; min-width: 18px; text-align: center; }
+  .add-btn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--gray3); background: var(--gray2); color: var(--white); font-size: 11px; font-weight: 700; cursor: pointer; transition: all .12s; }
+  .add-btn:hover { background: var(--white); color: var(--black); }
+
+  /* ORDER PANEL */
+  .order-panel { background: var(--gray1); border: 1px solid #1a3a1a; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+  .order-panel-hdr { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--green); margin-bottom: 12px; }
+  .order-item-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #111; font-size: 12px; }
+  .order-item-row:last-of-type { border-bottom: none; }
+  .order-total { display: flex; justify-content: space-between; padding-top: 10px; margin-top: 4px; font-size: 14px; font-weight: 700; border-top: 1px solid var(--gray2); }
+  .share-btn { background: var(--green); color: var(--black); border: none; border-radius: 8px; padding: 12px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; font-family: 'DM Sans', sans-serif; }
+  .share-btn:hover { background: #16a34a; }
+
+  /* REP CARDS */
+  .rep-card { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 16px; margin-bottom: 8px; }
+  .rep-header { display: grid; grid-template-columns: 36px minmax(0,1fr) 110px 80px 90px 100px 60px; align-items: center; gap: 10px; cursor: pointer; }
+  .rep-body { border-top: 1px solid var(--gray2); padding-top: 12px; margin-top: 12px; display: none; }
+  .rep-body.open { display: block; }
+  .rep-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--gray2); border: 1px solid var(--gray3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .rep-bar-bg { background: var(--gray2); border-radius: 3px; height: 4px; margin-top: 5px; overflow: hidden; }
+  .rep-bar { height: 100%; background: var(--white); border-radius: 3px; }
+
+  /* PODIUM */
+  .podium { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 20px; }
+  .podium-card { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 12px; padding: 20px 16px; text-align: center; }
+  .podium-card.p1 { border-color: #fbbf24; background: #0d0900; }
+  .podium-card.p2 { border-color: #94a3b8; background: #09090d; }
+  .podium-card.p3 { border-color: #b45309; background: #0d0800; }
+
+  /* TOP BAR */
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .top-bar h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+
+  /* BRAND TOGGLE */
+  .brand-toggle { display: flex; gap: 3px; background: var(--gray1); border-radius: 8px; padding: 3px; border: 1px solid var(--gray2); }
+  .brand-btn { padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; background: none; color: var(--gray4); font-family: 'DM Sans', sans-serif; letter-spacing: .05em; transition: all .15s; }
+  .brand-btn.active { background: var(--white); color: var(--black); }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-btn { padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid var(--gray2); background: none; color: var(--gray4); font-family: 'DM Sans', sans-serif; transition: all .12s; }
+  .filter-btn:hover { color: var(--white); }
+  .filter-btn.active { background: var(--white); color: var(--black); border-color: var(--white); }
+
+  /* STORE SELECTOR */
+  .store-selector { background: var(--gray1); border: 1px solid var(--gray2); border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+  .store-selector label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--gray4); display: block; margin-bottom: 8px; }
+  .store-selector select { width: 100%; background: var(--black); border: 1px solid var(--gray3); border-radius: 7px; padding: 10px 12px; color: var(--white); font-size: 14px; font-family: 'DM Sans', sans-serif; }
+  .store-selector select:focus { outline: none; border-color: var(--gray5); }
+
+  /* SKU INPUT */
+  .sku-adder { background: var(--black); border: 1px dashed var(--gray2); border-radius: 8px; padding: 14px; margin-top: 12px; }
+  .sku-input-row { display: grid; grid-template-columns: minmax(0,1fr) 80px 90px 34px; gap: 8px; align-items: end; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--gray3); border-radius: 3px; }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .podium { grid-template-columns: 1fr; }
+    .hb-number { font-size: 44px; }
+    nav { padding: 0 12px; }
+    .nav-tabs { gap: 0; }
+    .nav-tab { padding: 5px 8px; font-size: 11px; }
+    .page { padding: 16px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">TRELLIS</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button class="nav-tab" onclick="showPage('menu',this)">Rep Menu</button>
+    <button class="nav-tab" onclick="showPage('orders',this)">Orders</button>
+    <button class="nav-tab" onclick="showPage('accounts',this)">Accounts</button>
+    <button class="nav-tab" onclick="showPage('reps',this)">Reps</button>
+    <button class="nav-tab" onclick="showPage('vendors',this)">Vendor Days</button>
+    <button class="nav-tab" onclick="showPage('spark',this)">Spark</button>
+  </div>
+  <div class="nav-right">
+    <span class="nav-badge" id="nav-date"></span>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="hb-card" id="hb-card">
+    <div>
+      <div class="hb-label" id="hb-pulse-label">Orders today</div>
+      <div class="hb-number" id="hb-number">0</div>
+      <div class="hb-sub" id="hb-sub">No orders logged yet today</div>
+    </div>
+    <div style="text-align:right">
+      <div class="hb-status" id="hb-status" style="background:#f0f0f0;color:#999">Waiting...</div>
+      <div style="font-size:11px;color:#888;margin-top:8px" id="hb-date-display"></div>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Today</div><div class="kpi-val" id="k-today">$0</div><div class="kpi-sub" id="k-today-c">0 orders</div></div>
+    <div class="kpi"><div class="kpi-label">This week</div><div class="kpi-val" id="k-week">$0</div><div class="kpi-sub" id="k-week-c">0 orders</div></div>
+    <div class="kpi"><div class="kpi-label">This month</div><div class="kpi-val" id="k-month">$0</div><div class="kpi-sub" id="k-month-c">0 orders</div></div>
+    <div class="kpi"><div class="kpi-label">Active accounts</div><div class="kpi-val" id="k-active">0</div><div class="kpi-sub">&lt;30d</div></div>
+    <div class="kpi"><div class="kpi-label">Cold accounts</div><div class="kpi-val" id="k-cold" style="color:var(--red)">0</div><div class="kpi-sub">60d+ silent</div></div>
+  </div>
+  <div class="section-hdr">Rep leaderboard — this month</div>
+  <div id="dash-reps"></div>
+  <div class="section-hdr">Today's orders</div>
+  <div id="dash-today"></div>
+  <div class="section-hdr">Top SKUs this month</div>
+  <div id="dash-skus"></div>
+  <div class="section-hdr">Accounts needing attention</div>
+  <div id="dash-attn"></div>
+</div>
+
+<!-- REP MENU -->
+<div id="page-menu" class="page">
+  <div class="top-bar">
+    <div>
+      <h2>Rep Menu</h2>
+      <div style="font-size:12px;color:var(--gray5);margin-top:2px">Select a store, build an order, send to Martin</div>
+    </div>
+    <div class="brand-toggle">
+      <button class="brand-btn active" onclick="setBrand('uplyfted',this)">Uplyfted</button>
+      <button class="brand-btn" onclick="setBrand('numb',this)">Numb</button>
+    </div>
+  </div>
+
+  <div class="store-selector">
+    <label>Select store for this order</label>
+    <select id="store-select">
+      <option value="">— Choose a store —</option>
+    </select>
+  </div>
+
+  <div class="filter-bar" id="menu-filters"></div>
+
+  <div style="background:var(--gray1);border:1px solid var(--gray2);border-radius:8px;padding:10px 14px;margin-bottom:16px">
+    <input id="menu-search" type="text" placeholder="Search strains..." style="background:none;border:none;width:100%;color:var(--white);font-size:13px;font-family:'DM Sans',sans-serif" oninput="renderMenu()">
+  </div>
+
+  <div id="order-panel" style="display:none" class="order-panel">
+    <div class="order-panel-hdr" id="order-panel-store">Current order</div>
+    <div id="order-items-list"></div>
+    <div class="order-total"><span>Total</span><span id="order-grand-total">$0</span></div>
+    <button class="share-btn" onclick="sendOrder()">Send order to Martin ↗</button>
+  </div>
+
+  <div id="menu-content"></div>
+</div>
+
+<!-- ORDERS -->
+<div id="page-orders" class="page">
+  <div class="top-bar"><h2>Order log</h2><button class="btn btn-primary btn-sm" onclick="toggleEl('order-form')">+ Log order</button></div>
+  <div id="order-form" style="display:none" class="form-panel">
+    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="fg"><label>Account</label><input id="o-acct" placeholder="Store name" list="acct-datalist"><datalist id="acct-datalist"></datalist></div>
+      <div class="fg"><label>Rep</label><input id="o-rep" placeholder="Rep name" list="rep-dl"><datalist id="rep-dl"></datalist></div>
+      <div class="fg"><label>Date</label><input id="o-date" type="date"></div>
+      <div class="fg"><label>Source</label><select id="o-src"><option>Distru</option><option>Rep text</option><option>Rep menu</option><option>Google Sheet</option><option>Direct call</option></select></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Notes</label><input id="o-notes" placeholder="Any notes..."></div>
+    <div class="sku-adder">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gray4);margin-bottom:10px">Line items</div>
+      <div id="sku-lines-display"></div>
+      <div class="sku-input-row" style="margin-top:8px">
+        <div class="fg" style="margin:0"><input id="si-name" placeholder="Product name" list="sku-dl"><datalist id="sku-dl"></datalist></div>
+        <div class="fg" style="margin:0"><input id="si-qty" type="number" placeholder="Qty" min="1"></div>
+        <div class="fg" style="margin:0"><input id="si-price" type="number" placeholder="Unit $"></div>
+        <button class="btn btn-sm" onclick="addSkuLine()" style="height:34px;font-size:16px;padding:0 8px">+</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px;color:var(--gray5)">Order total: <span id="sku-total-preview" style="color:var(--white);font-weight:700">$0</span></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-primary" onclick="saveOrder()">Save order</button>
+      <button class="btn" onclick="toggleEl('order-form')">Cancel</button>
+    </div>
+  </div>
+  <div class="tab-strip">
+    <button class="tab active" onclick="filterTab('orders','all',this)">All</button>
+    <button class="tab" onclick="filterTab('orders','today',this)">Today</button>
+    <button class="tab" onclick="filterTab('orders','week',this)">This week</button>
+  </div>
+  <div id="orders-list"></div>
+</div>
+
+<!-- ACCOUNTS -->
+<div id="page-accounts" class="page">
+  <div class="top-bar"><h2>Account health</h2><button class="btn btn-primary btn-sm" onclick="toggleEl('acct-form')">+ Add account</button></div>
+  <div id="acct-form" style="display:none" class="form-panel">
+    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="fg"><label>Account name</label><input id="a-name" placeholder="Store name"></div>
+      <div class="fg"><label>Location</label><input id="a-loc" placeholder="City"></div>
+      <div class="fg"><label>Rep owner</label><input id="a-rep" placeholder="Rep name" list="rep-dl2"><datalist id="rep-dl2"></datalist></div>
+      <div class="fg"><label>Last order date</label><input id="a-date" type="date"></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Notes</label><input id="a-notes" placeholder="Pricing notes, deal terms..."></div>
+    <button class="btn btn-primary btn-sm" onclick="saveAccount()">Save</button>
+  </div>
+  <div class="tab-strip">
+    <button class="tab active" onclick="filterTab('accounts','all',this)">All</button>
+    <button class="tab" onclick="filterTab('accounts','hot',this)">Hot &lt;14d</button>
+    <button class="tab" onclick="filterTab('accounts','warm',this)">Warm</button>
+    <button class="tab" onclick="filterTab('accounts','cold',this)">Cold 60d+</button>
+  </div>
+  <div class="col-hdr" style="grid-template-columns:minmax(0,1fr) 90px 80px 100px 80px 50px">
+    <div>Account</div><div style="text-align:right">Last order</div><div style="text-align:center">Days</div><div style="text-align:center">Status</div><div style="text-align:center">Rep</div><div></div>
+  </div>
+  <div id="accounts-list"></div>
+</div>
+
+<!-- REPS -->
+<div id="page-reps" class="page">
+  <div class="top-bar"><h2>Rep performance</h2><button class="btn btn-primary btn-sm" onclick="toggleEl('rep-form')">+ Add rep</button></div>
+  <div id="rep-form" style="display:none" class="form-panel">
+    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="fg"><label>Rep name</label><input id="r-name" placeholder="Full name"></div>
+      <div class="fg"><label>Territory</label><input id="r-territory" placeholder="e.g. Metro Detroit"></div>
+      <div class="fg"><label>Phone</label><input id="r-phone" placeholder="Phone number"></div>
+      <div class="fg"><label>Monthly goal ($)</label><input id="r-goal" type="number" placeholder="e.g. 50000"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveRep()">Save rep</button>
+  </div>
+  <div class="tab-strip">
+    <button class="tab active" onclick="repPeriod('month',this)">This month</button>
+    <button class="tab" onclick="repPeriod('week',this)">This week</button>
+    <button class="tab" onclick="repPeriod('alltime',this)">All time</button>
+  </div>
+  <div id="rep-podium"></div>
+  <div class="col-hdr" style="grid-template-columns:36px minmax(0,1fr) 110px 80px 80px 100px 60px">
+    <div></div><div>Rep</div><div style="text-align:right">Revenue</div><div style="text-align:center">Orders</div><div style="text-align:center">Accts</div><div style="text-align:center">vs Goal</div><div></div>
+  </div>
+  <div id="reps-list"></div>
+</div>
+
+<!-- VENDOR DAYS -->
+<div id="page-vendors" class="page">
+  <div class="top-bar"><h2>Vendor days</h2><button class="btn btn-primary btn-sm" onclick="toggleEl('vendor-form')">+ Log vendor day</button></div>
+  <div id="vendor-form" style="display:none" class="form-panel">
+    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr">
+      <div class="fg"><label>Account</label><input id="v-acct" placeholder="Store name" list="acct-dl2"><datalist id="acct-dl2"></datalist></div>
+      <div class="fg"><label>Date</label><input id="v-date" type="date"></div>
+      <div class="fg"><label>Rep</label><input id="v-rep" placeholder="Rep name" list="rep-dl3"><datalist id="rep-dl3"></datalist></div>
+      <div class="fg"><label>Order after? ($)</label><input id="v-lift" type="number" placeholder="0"></div>
+      <div class="fg"><label>Notes</label><input id="v-notes" placeholder="How did it go?"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveVendor()">Save</button>
+  </div>
+  <div class="col-hdr" style="grid-template-columns:90px minmax(0,1fr) 80px 100px 60px">
+    <div>Date</div><div>Account</div><div>Rep</div><div style="text-align:right">Lift</div><div></div>
+  </div>
+  <div id="vendor-list"></div>
+</div>
+
+<!-- SPARK -->
+<div id="page-spark" class="page">
+  <div class="top-bar"><h2>Spark pipeline</h2><button class="btn btn-primary btn-sm" onclick="toggleEl('spark-form')">+ Add candidate</button></div>
+  <div id="spark-form" style="display:none" class="form-panel">
+    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="fg"><label>Account</label><input id="s-acct" placeholder="Store name"></div>
+      <div class="fg"><label>Monthly revenue</label><input id="s-rev" type="number" placeholder="e.g. 22000"></div>
+      <div class="fg"><label>Rep</label><input id="s-rep" placeholder="Rep name" list="rep-dl4"><datalist id="rep-dl4"></datalist></div>
+      <div class="fg"><label>Status</label><select id="s-st"><option>Candidate</option><option>Contacted</option><option>Activated</option><option>Re-engage first</option></select></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Notes</label><input id="s-notes" placeholder="Context..."></div>
+    <button class="btn btn-primary btn-sm" onclick="saveSpark()">Save</button>
+  </div>
+  <div class="tab-strip">
+    <button class="tab active" onclick="filterTab('spark','all',this)">All</button>
+    <button class="tab" onclick="filterTab('spark','Candidate',this)">Candidates</button>
+    <button class="tab" onclick="filterTab('spark','Contacted',this)">Contacted</button>
+    <button class="tab" onclick="filterTab('spark','Activated',this)">Activated</button>
+    <button class="tab" onclick="filterTab('spark','Re-engage first',this)">Re-engage</button>
+  </div>
+  <div class="col-hdr" style="grid-template-columns:minmax(0,1fr) 90px 110px 120px 60px">
+    <div>Account</div><div style="text-align:right">Rev</div><div style="text-align:center">Rep</div><div style="text-align:center">Status</div><div></div>
+  </div>
+  <div id="spark-list"></div>
+</div>
+
+<script>
+const TODAY = new Date().toISOString().split('T')[0];
+const dateDisplay = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+document.getElementById('hb-date-display').textContent = dateDisplay;
+document.getElementById('nav-date').textContent = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+const odate = document.getElementById('o-date'); if(odate) odate.value = TODAY;
+const vdate = document.getElementById('v-date'); if(vdate) vdate.value = TODAY;
+
+// STATE
+let S = {orders:[],accounts:[],spark:[],vendors:[],reps:[],skus:[]};
+let tmpSkus = [];
+let currentBrand = 'uplyfted';
+let menuOrder = {};
+let repPeriodFilter = 'month';
+
+// STORAGE
+function lsGet(k){try{const v=localStorage.getItem('trellis_'+k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem('trellis_'+k,JSON.stringify(v));}catch(e){}}
+
+function load(){
+  for(const k of Object.keys(S)){const v=lsGet(k);if(v)S[k]=v;}
+  renderAll();
+}
+
+function save(k){lsSet(k,S[k]);}
+
+// HELPERS
+const fmt = n => '$'+Math.round(n).toLocaleString();
+const fmtD = s => s ? new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+function daysSince(d){if(!d)return 9999;return Math.floor((new Date(TODAY)-new Date(d+'T12:00:00'))/86400000);}
+function statusBadge(d){
+  if(d<=14) return '<span class="badge b-green">Hot</span>';
+  if(d<=30) return '<span class="badge b-lime">Active</span>';
+  if(d<=60) return '<span class="badge b-amber">Warm</span>';
+  if(d<=120) return '<span class="badge b-red">Cold</span>';
+  return '<span class="badge b-gray">Dormant</span>';
+}
+function daysCls(d){return d<=14?'days-hot':d<=60?'days-warm':d<=120?'days-cold':'days-dead';}
+function initials(n){return n.split(' ').map(x=>x[0]||'').join('').toUpperCase().slice(0,2);}
+function sparkBadge(s){
+  const m={Activated:'b-green',Contacted:'b-blue','Re-engage first':'b-red',Candidate:'b-gray'};
+  return `<span class="badge ${m[s]||'b-gray'}">${s}</span>`;
+}
+
+// REP STATS
+function getRepOrders(name, period){
+  const ws=new Date(TODAY); ws.setDate(ws.getDate()-ws.getDay());
+  const mo=TODAY.slice(0,7);
+  return S.orders.filter(o=>{
+    if(!o.rep||o.rep.toLowerCase()!==name.toLowerCase()) return false;
+    if(period==='week') return new Date(o.date+'T12:00:00')>=ws;
+    if(period==='month') return o.date.startsWith(mo);
+    return true;
+  });
+}
+function buildRepStats(period){
+  const allReps=new Set([...S.reps.map(r=>r.name),...S.orders.filter(o=>o.rep).map(o=>o.rep)]);
+  return [...allReps].map(name=>{
+    const ro=S.reps.find(r=>r.name.toLowerCase()===name.toLowerCase())||{};
+    const orders=getRepOrders(name,period);
+    const revenue=orders.reduce((s,o)=>s+o.total,0);
+    const accts=new Set(orders.map(o=>o.account)).size;
+    const goal=ro.goal||0;
+    const pct=goal>0?Math.round(revenue/goal*100):null;
+    return{name,revenue,orders:orders.length,accts,goal,pct,territory:ro.territory||'',phone:ro.phone||''};
+  }).sort((a,b)=>b.revenue-a.revenue);
+}
+
+// RENDER ALL
+function renderAll(){
+  renderDashboard();
+  renderOrders('all');
+  renderAccounts('all');
+  renderReps(repPeriodFilter);
+  renderVendors();
+  renderSpark('all');
+  renderMenu();
+  updateDatalist('rep-dl',repNames());
+  updateDatalist('rep-dl2',repNames());
+  updateDatalist('rep-dl3',repNames());
+  updateDatalist('rep-dl4',repNames());
+  updateDatalist('acct-datalist',acctNames());
+  updateDatalist('acct-dl2',acctNames());
+  updateDatalist('sku-dl',S.skus.map(s=>s.name));
+  populateStoreSelect();
+}
+
+function repNames(){return [...new Set([...S.reps.map(r=>r.name),...S.orders.filter(o=>o.rep).map(o=>o.rep)])];}
+function acctNames(){return S.accounts.map(a=>a.name);}
+function updateDatalist(id,items){const dl=document.getElementById(id);if(dl)dl.innerHTML=items.map(n=>`<option value="${n}">`).join('');}
+
+function populateStoreSelect(){
+  const sel=document.getElementById('store-select');
+  if(!sel)return;
+  const cur=sel.value;
+  const stores=[...new Set([...S.accounts.map(a=>a.name)])].sort();
+  sel.innerHTML='<option value="">— Choose a store —</option>'+stores.map(s=>`<option value="${s}" ${s===cur?'selected':''}>${s}</option>`).join('');
+  if(!cur&&stores.length) sel.value='';
+}
+
+// DASHBOARD
+function renderDashboard(){
+  const todayO=S.orders.filter(o=>o.date===TODAY);
+  const todayT=todayO.reduce((s,o)=>s+o.total,0);
+  document.getElementById('hb-number').textContent=todayO.length;
+  if(!todayO.length){
+    document.getElementById('hb-sub').textContent='No orders logged yet today';
+    document.getElementById('hb-status').textContent='Waiting...';
+    document.getElementById('hb-status').style.cssText='background:#f0f0f0;color:#999';
+  } else {
+    document.getElementById('hb-sub').textContent=fmt(todayT)+' · '+todayO.length+' order'+(todayO.length>1?'s':'');
+    document.getElementById('hb-status').innerHTML='<span class="pulse"></span>Active';
+    document.getElementById('hb-status').style.cssText='background:var(--green-dim);color:var(--green)';
+  }
+  const ws=new Date(TODAY); ws.setDate(ws.getDate()-ws.getDay());
+  const wkO=S.orders.filter(o=>new Date(o.date+'T12:00:00')>=ws);
+  const moO=S.orders.filter(o=>o.date.startsWith(TODAY.slice(0,7)));
+  document.getElementById('k-today').textContent=fmt(todayT);
+  document.getElementById('k-today-c').textContent=todayO.length+' orders';
+  document.getElementById('k-week').textContent=fmt(wkO.reduce((s,o)=>s+o.total,0));
+  document.getElementById('k-week-c').textContent=wkO.length+' orders';
+  document.getElementById('k-month').textContent=fmt(moO.reduce((s,o)=>s+o.total,0));
+  document.getElementById('k-month-c').textContent=moO.length+' orders';
+  document.getElementById('k-active').textContent=S.accounts.filter(a=>daysSince(a.lastOrder)<=30).length;
+  document.getElementById('k-cold').textContent=S.accounts.filter(a=>daysSince(a.lastOrder)>=60).length;
+
+  // Rep mini leaderboard
+  const stats=buildRepStats('month').slice(0,3);
+  const dr=document.getElementById('dash-reps');
+  if(!stats.length){dr.innerHTML='<div class="empty">Log orders with rep names to see leaderboard</div>';}
+  else{
+    const max=stats[0].revenue||1;
+    dr.innerHTML=stats.map((r,i)=>{
+      const colors=['#fbbf24','#94a3b8','#b45309'];
+      return `<div class="card" style="display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center">
+        <div class="rep-avatar" style="border-color:${colors[i]}">${initials(r.name)}</div>
+        <div>
+          <div style="font-size:13px;font-weight:600">${r.name}</div>
+          <div class="rep-bar-bg"><div class="rep-bar" style="width:${Math.round(r.revenue/max*100)}%;background:${colors[i]}"></div></div>
+        </div>
+        <div style="text-align:right;font-family:'DM Mono',monospace;font-size:14px;font-weight:500">${fmt(r.revenue)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Today's orders
+  const dt=document.getElementById('dash-today');
+  if(!todayO.length){dt.innerHTML='<div class="empty">No orders today yet</div>';}
+  else{dt.innerHTML=todayO.map(o=>`<div class="card" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start">
+    <div><div style="font-size:13px;font-weight:600">${o.account}</div>${o.rep?`<div style="font-size:11px;color:var(--gray5)">Rep: ${o.rep}</div>`:''}
+    <div class="sku-summary">${(o.skus||[]).map(s=>`<span class="badge b-gray">${s.name} ×${s.qty}</span>`).join('')}</div></div>
+    <div style="text-align:right"><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500">${fmt(o.total)}</div><div style="font-size:10px;color:var(--gray5)">${o.source}</div></div>
+  </div>`).join('');}
+
+  // Top SKUs
+  const skuMap={};
+  moO.forEach(o=>(o.skus||[]).forEach(s=>{skuMap[s.name]=(skuMap[s.name]||0)+s.qty*s.price;}));
+  const topSkus=Object.entries(skuMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const ds=document.getElementById('dash-skus');
+  if(!topSkus.length){ds.innerHTML='<div class="empty">No SKU data yet this month</div>';}
+  else{
+    const max2=topSkus[0][1];
+    ds.innerHTML=topSkus.map(([name,val])=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="width:160px;font-size:12px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+      <div style="flex:1;background:var(--gray2);border-radius:2px;height:12px;overflow:hidden"><div style="height:100%;background:var(--white);width:${Math.round(val/max2*100)}%"></div></div>
+      <div style="width:70px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;font-weight:500">${fmt(val)}</div>
+    </div>`).join('');
+  }
+
+  // Attention
+  const cold=S.accounts.filter(a=>daysSince(a.lastOrder)>=60).sort((a,b)=>daysSince(b.lastOrder)-daysSince(a.lastOrder)).slice(0,4);
+  const da=document.getElementById('dash-attn');
+  if(!cold.length){da.innerHTML='<div class="empty">All accounts looking good</div>';}
+  else{da.innerHTML=cold.map(a=>{const d=daysSince(a.lastOrder);
+    return `<div class="acct-row" style="grid-template-columns:minmax(0,1fr) 90px 70px 100px">
+      <div><div style="font-size:13px;font-weight:600">${a.name}</div><div style="font-size:11px;color:var(--gray5)">${a.location||''}${a.rep?' · '+a.rep:''}</div></div>
+      <div style="text-align:right;font-size:11px;color:var(--gray5)">${fmtD(a.lastOrder)}</div>
+      <div class="${daysCls(d)}" style="text-align:center;font-size:13px">${d===9999?'—':d+'d'}</div>
+      <div style="text-align:center">${statusBadge(d)}</div>
+    </div>`;
+  }).join('');}
+}
+
+// MENU DATA
+const UPLYFTED_DATA = [
+  {section:"1g Non-Infused Pre-Rolls",unitPrice:5,caseQty:50,caseCost:250,category:"preroll",products:[
+    {name:"1g Pre-Roll - Autumn Sunset",thc:.28},{name:"1g Pre-Roll - Baby Yoda",thc:.28},
+    {name:"1g Pre-Roll - Banaconda",thc:.28},{name:"1g Pre-Roll - Bubblegum Marker",thc:.28},
+    {name:"1g Pre-Roll - Canal St. Runtz",thc:.26},{name:"1g Pre-Roll - Cap Junky",thc:.28},
+    {name:"1g Pre-Roll - Galactic Warheads",thc:.26},{name:"1g Pre-Roll - Grape Gas",thc:.28},
+    {name:"1g Pre-Roll - Marker Fumez",thc:.28},{name:"1g Pre-Roll - OG Runtz",thc:.27},
+    {name:"1g Pre-Roll - Permanent Marker",thc:.27},{name:"1g Pre-Roll - Permanent Power #9",thc:.27},
+    {name:"1g Pre-Roll - Purple Pop Rocks",thc:.27},{name:"1g Pre-Roll - SherbStack",thc:.28},
+    {name:"1g Pre-Roll - Ze Marker",thc:.27}
+  ]},
+  {section:"3.5g Pre-Packs",unitPrice:15,caseQty:32,caseCost:480,category:"preroll",products:[
+    {name:"3.5g Pre-Pack - Baby Yoda",thc:.28},{name:"3.5g Pre-Pack - Banaconda",thc:.28},
+    {name:"3.5g Pre-Pack - Cap Junky",thc:.28},{name:"3.5g Pre-Pack - Grape Gas",thc:.28},
+    {name:"3.5g Pre-Pack - Jet Fuel OG",thc:.28},{name:"3.5g Pre-Pack - Marker Fumez",thc:.28},
+    {name:"3.5g Pre-Pack - Permanent Marker",thc:.27},{name:"3.5g Pre-Pack - Permanent Power #9",thc:.27},
+    {name:"3.5g Pre-Pack - Sherbstack",thc:.27},{name:"3.5g Pre-Pack - Ze Marker",thc:.27}
+  ]},
+  {section:"1.5g Mini Live Rosin Donut",unitPrice:14,caseQty:25,caseCost:350,category:"rosin",products:[
+    {name:"1.5g Rosin Donut - Baby Yoda x Coup De'tat",thc:.48},
+    {name:"1.5g Rosin Donut - Grape Gas x Bubblegum Marker",thc:.41},
+    {name:"1.5g Rosin Donut - Marker Fumez x Cap Junky",thc:.48},
+    {name:"1.5g Rosin Donut - Purple Pop Rocks x Grandi Guava",thc:.40}
+  ]},
+  {section:"2.5g Live Rosin Donut",unitPrice:20,caseQty:25,caseCost:500,category:"rosin",products:[
+    {name:"2.5g Rosin Donut - Permanent Marker x Honey Banana",thc:.41},
+    {name:"2.5g Rosin Donut - Marker Fumez x Canal St. Runtz",thc:.45}
+  ]},
+  {section:"0.5g Live Rosin Vape",unitPrice:18,caseQty:25,caseCost:450,category:"vape",products:[
+    {name:"0.5g Rosin Vape - Banaconda",thc:.82},{name:"0.5g Rosin Vape - Cap Junky",thc:.76},
+    {name:"0.5g Rosin Vape - Coup Junky",thc:.89},{name:"0.5g Rosin Vape - Grapefruit Bomb",thc:.86},
+    {name:"0.5g Rosin Vape - Honey Runtz",thc:.79},{name:"0.5g Rosin Vape - Honey Banana",thc:.79},
+    {name:"0.5g Rosin Vape - Runtz Royale",thc:.87}
+  ]},
+  {section:"1.2g Infused Pre-Rolls",unitPrice:7.5,caseQty:50,caseCost:375,category:"preroll",products:[
+    {name:"1.2g Infused - Baby Yoda",thc:.40},{name:"1.2g Infused - Banaconda",thc:.44},
+    {name:"1.2g Infused - Canal St. Runtz",thc:.42},{name:"1.2g Infused - Cap Junky",thc:.43},
+    {name:"1.2g Infused - Grape Gas",thc:.38},{name:"1.2g Infused - OG Runtz",thc:.42},
+    {name:"1.2g Infused - PM x Banaconda",thc:.40},{name:"1.2g Infused - PM x Bubblegum Marker",thc:.41},
+    {name:"1.2g Infused - PM x Canal St. Runtz",thc:.42},{name:"1.2g Infused - PM x Cap Junky",thc:.44},
+    {name:"1.2g Infused - PM x Permanent Power #9",thc:.41},{name:"1.2g Infused - PM x Purple Pop Rocks",thc:.41}
+  ]},
+  {section:"5pk Infused Multi-Pack",unitPrice:12.5,caseQty:25,caseCost:312.5,category:"preroll",products:[
+    {name:"5pk Infused - Baby Yoda",thc:.41},{name:"5pk Infused - Banaconda",thc:.39},
+    {name:"5pk Infused - Bubblegum Marker",thc:.41},{name:"5pk Infused - Canal St. Runtz",thc:.36},
+    {name:"5pk Infused - Cap Junky",thc:.38},{name:"5pk Infused - Grape Gas",thc:.35},
+    {name:"5pk Infused - Jet Fuel OG",thc:.41},{name:"5pk Infused - Marker Fumez",thc:.41},
+    {name:"5pk Infused - OG Runtz",thc:.46},{name:"5pk Infused - Permanent Power #9",thc:.41},
+    {name:"5pk Infused - Purple Pop Rocks",thc:.36},{name:"5pk Infused - Ze Marker",thc:.47}
+  ]},
+  {section:"1g Live Rosin Concentrate",unitPrice:18,caseQty:25,caseCost:450,category:"rosin",products:[
+    {name:"1g Live Rosin - Banaconda",thc:.76},{name:"1g Live Rosin - Cap Junky",thc:.74},
+    {name:"1g Live Rosin - Canal St. Runtz",thc:.81},{name:"1g Live Rosin - Grape Gas",thc:.80},
+    {name:"1g Live Rosin - Grandi Guava",thc:.80},{name:"1g Live Rosin - Coup D'Etat",thc:.81},
+    {name:"1g Live Rosin - Honey Banana",thc:.82},{name:"1g Live Rosin - Jet Fuel OG",thc:.81},
+    {name:"1g Live Rosin - Marker Bomb",thc:.79},{name:"1g Live Rosin - Guava Jungle Drip",thc:.78},
+    {name:"1g Live Rosin - Diesel Royale",thc:.80},{name:"1g Live Rosin - MOB",thc:.81}
+  ]},
+  {section:"1g Bubble Hash",unitPrice:8,caseQty:25,caseCost:200,category:"hash",products:[
+    {name:"1g Bubble Hash - Autumn Sunset",thc:.55},{name:"1g Bubble Hash - Baby Yoda",thc:.55},
+    {name:"1g Bubble Hash - Banaconda",thc:.56},{name:"1g Bubble Hash - Bubblegum Marker",thc:.65},
+    {name:"1g Bubble Hash - Canal St Runtz",thc:.58},{name:"1g Bubble Hash - Cap Junky",thc:.62},
+    {name:"1g Bubble Hash - Grape Gas",thc:.62},{name:"1g Bubble Hash - Jet Fuel OG",thc:.62},
+    {name:"1g Bubble Hash - Marker Fumez",thc:.62},{name:"1g Bubble Hash - OG Runtz",thc:.58},
+    {name:"1g Bubble Hash - Permanent Marker",thc:.62},{name:"1g Bubble Hash - Permanent Power 9",thc:.62},
+    {name:"1g Bubble Hash - Purple Pop Rocks",thc:.65},{name:"1g Bubble Hash - Sherbstack",thc:.57},
+    {name:"1g Bubble Hash - Ze Marker",thc:.55}
+  ]}
+];
+
+const NUMB_DATA = [
+  {section:"5pk Infused Pre-Roll Multi-Pack",unitPrice:7.5,caseQty:25,caseCost:187.5,category:"preroll",products:[
+    {name:"5pk - Junglato",thc:.49},{name:"5pk - Birthday Cake",thc:.48},{name:"5pk - Peach Rings",thc:.47},
+    {name:"5pk - Strawlato",thc:.49},{name:"5pk - Berry Bellini",thc:.46},{name:"5pk - Rainbow Beltz",thc:.48},
+    {name:"5pk - Watermelon Bubblegum",thc:.47}
+  ]},
+  {section:"1.2g Infused Pre-Rolls",unitPrice:1.5,caseQty:100,caseCost:150,category:"preroll",products:[
+    {name:"1.2g - Apple Fritter",thc:.43},{name:"1.2g - Blueberry Muffin",thc:.41},
+    {name:"1.2g - Birthday Cake",thc:.43},{name:"1.2g - Peach Rings",thc:.38},
+    {name:"1.2g - Rainbow Tartz",thc:.40},{name:"1.2g - Strawberry Cough",thc:.44},
+    {name:"1.2g - Tropical Punch",thc:.41},{name:"1.2g - Watermelon Bubblegum",thc:.40}
+  ]},
+  {section:"Moonrocks 454g",unitPrice:null,caseQty:32,caseCost:1000,category:"hash",products:[
+    {name:"Moonrocks - Strawberry Runtz",thc:.57},{name:"Moonrocks - Watermelon Sorbet",thc:.55},
+    {name:"Moonrocks - Bubblegum Gelato",thc:.55},{name:"Moonrocks - Rainbow Beltz",thc:.51},
+    {name:"Moonrocks - Birthday Cake",thc:.50}
+  ]},
+  {section:"Snowcaps 454g",unitPrice:null,caseQty:32,caseCost:1200,category:"hash",products:[
+    {name:"Snowcaps - Strawberry Lemonade",thc:.56},{name:"Snowcaps - Peach Rings",thc:.55},
+    {name:"Snowcaps - Bubblegum Gelato",thc:.56},{name:"Snowcaps - Rainbow Tartz",thc:.57},
+    {name:"Snowcaps - Birthday Cake",thc:.57}
+  ]},
+  {section:"1g Snowcap Joints",unitPrice:3.5,caseQty:100,caseCost:350,category:"preroll",products:[
+    {name:"Snowcap Joint - Rainbow Tartz",thc:.43},{name:"Snowcap Joint - Grape Soda",thc:.43}
+  ]},
+  {section:"1g Moonrock Joints",unitPrice:2.5,caseQty:100,caseCost:300,category:"preroll",products:[
+    {name:"Moonrock Joint - Bubblegum Gelato",thc:.41},{name:"Moonrock Joint - Grape Ape",thc:.43},
+    {name:"Moonrock Joint - Rainbow Beltz",thc:.43},{name:"Moonrock Joint - Strawberry Runtz",thc:.43},
+    {name:"Moonrock Joint - Watermelon Zlushie",thc:.42}
+  ]}
+];
+
+const CAT_BADGE = {rosin:'b-rosin',preroll:'b-green',hash:'b-hash',vape:'b-blue'};
+const CAT_LABEL = {rosin:'Live Rosin',preroll:'Pre-Roll',hash:'Hash',vape:'Vape'};
+
+function setBrand(brand, btn){
+  currentBrand = brand;
+  document.querySelectorAll('.brand-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  menuOrder = {};
+  renderMenu();
+}
+
+function renderMenu(){
+  const data = currentBrand === 'uplyfted' ? UPLYFTED_DATA : NUMB_DATA;
+  const q = (document.getElementById('menu-search')||{value:''}).value.toLowerCase();
+
+  // filters
+  const cats = ['all',...new Set(data.map(s=>s.category))];
+  const fb = document.getElementById('menu-filters');
+  if(fb){
+    const activeCat = fb.querySelector('.filter-btn.active')?.dataset.cat || 'all';
+    fb.innerHTML = cats.map(c=>`<button class="filter-btn ${c===activeCat?'active':''}" data-cat="${c}" onclick="menuFilter('${c}',this)">${c==='all'?'All products':CAT_LABEL[c]||c}</button>`).join('');
+  }
+  const activeCat = document.querySelector('#menu-filters .filter-btn.active')?.dataset?.cat || 'all';
+
+  // order panel
+  const keys = Object.keys(menuOrder);
+  const opanel = document.getElementById('order-panel');
+  const storeName = (document.getElementById('store-select')||{}).value;
+  if(opanel){
+    if(!keys.length){opanel.style.display='none';}
+    else{
+      opanel.style.display='block';
+      document.getElementById('order-panel-store').textContent = storeName ? `Order for: ${storeName}` : 'Current order';
+      let total=0;
+      document.getElementById('order-items-list').innerHTML = keys.map(k=>{
+        const item=menuOrder[k]; total+=item.qty*item.caseCost;
+        return `<div class="order-item-row">
+          <span style="color:#aaa;flex:1">${k}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="qty-btn" onclick="menuChangeQty('${k.replace(/'/g,"\\'")}',${item.caseCost},-1)" style="width:22px;height:22px;font-size:12px">-</button>
+            <span style="font-weight:700;min-width:16px;text-align:center">${item.qty}</span>
+            <button class="qty-btn" onclick="menuChangeQty('${k.replace(/'/g,"\\'")}',${item.caseCost},1)" style="width:22px;height:22px;font-size:12px">+</button>
+          </div>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:500;margin-left:12px">${fmt(item.qty*item.caseCost)}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('order-grand-total').textContent = fmt(total);
+    }
+  }
+
+  // content
+  const mc = document.getElementById('menu-content');
+  if(!mc) return;
+  let html='';
+  data.forEach(section=>{
+    if(activeCat!=='all'&&section.category!==activeCat) return;
+    const products=section.products.filter(p=>!q||p.name.toLowerCase().includes(q));
+    if(!products.length) return;
+    const priceStr = section.unitPrice ? `$${section.unitPrice}/unit · $${section.caseCost}/case · ${section.caseQty} per case` : `$${section.caseCost}/case · ${section.caseQty} per case`;
+    html+=`<div class="menu-section">
+      <div class="menu-section-hdr">
+        <div class="menu-section-name">${section.section} <span class="badge ${CAT_BADGE[section.category]||'b-gray'}" style="font-size:9px;margin-left:6px">${CAT_LABEL[section.category]||section.category}</span></div>
+        <div class="menu-section-price">${priceStr}</div>
+      </div>
+      <div class="product-grid">
+        ${products.map(p=>{
+          const key=p.name; const qty=(menuOrder[key]||{}).qty||0;
+          return `<div class="product-card">
+            <div class="p-name">${p.name}</div>
+            <div class="p-footer">
+              <div class="p-thc">${Math.round(p.thc*100)}%<span>THC</span></div>
+              ${qty>0?`<div class="qty-ctrl">
+                <button class="qty-btn" onclick="menuChangeQty('${key.replace(/'/g,"\\'")}',${section.caseCost},-1)">-</button>
+                <span class="qty-num">${qty}</span>
+                <button class="qty-btn" onclick="menuChangeQty('${key.replace(/'/g,"\\'")}',${section.caseCost},1)">+</button>
+              </div>`:`<button class="add-btn" onclick="menuChangeQty('${key.replace(/'/g,"\\'")}',${section.caseCost},1)">+ Add</button>`}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  mc.innerHTML = html || '<div class="empty">No products match your search</div>';
+}
+
+function menuFilter(cat, btn){
+  document.querySelectorAll('#menu-filters .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenu();
+}
+
+function menuChangeQty(name, caseCost, delta){
+  if(!menuOrder[name]) menuOrder[name]={qty:0,caseCost};
+  menuOrder[name].qty=Math.max(0,menuOrder[name].qty+delta);
+  if(menuOrder[name].qty===0) delete menuOrder[name];
+  renderMenu();
+}
+
+function sendOrder(){
+  const keys=Object.keys(menuOrder);
+  if(!keys.length) return;
+  const store=(document.getElementById('store-select')||{}).value||'Unknown store';
+  const brand=currentBrand==='uplyfted'?'Uplyfted':'Numb';
+  let msg=`${brand} Order Request\nStore: ${store}\nDate: ${new Date().toLocaleDateString()}\n\n`;
+  let total=0;
+  keys.forEach(k=>{
+    const cost=menuOrder[k].qty*menuOrder[k].caseCost; total+=cost;
+    msg+=`• ${k} — ${menuOrder[k].qty} case${menuOrder[k].qty>1?'s':''} (${fmt(cost)})\n`;
+  });
+  msg+=`\nTotal: ${fmt(total)}\n\nSent from Trellis Rep Menu`;
+  if(navigator.share){navigator.share({title:`${brand} Order - ${store}`,text:msg});}
+  else{navigator.clipboard.writeText(msg).then(()=>{alert('Order copied! Paste it to send to Martin.');});}
+  // Also auto-log the order
+  const skuLines=[];
+  keys.forEach(k=>{skuLines.push({name:k,qty:menuOrder[k].qty,price:menuOrder[k].caseCost});});
+  S.orders.push({account:store,rep:'',date:TODAY,source:'Rep menu',notes:`${brand} order via rep menu`,skus:skuLines,total});
+  save('orders');
+  menuOrder={};
+  renderAll();
+}
+
+// ORDERS
+function renderOrders(filter){
+  let orders=[...S.orders].reverse();
+  if(filter==='today') orders=orders.filter(o=>o.date===TODAY);
+  if(filter==='week'){const ws=new Date(TODAY);ws.setDate(ws.getDate()-ws.getDay());orders=orders.filter(o=>new Date(o.date+'T12:00:00')>=ws);}
+  const el=document.getElementById('orders-list');
+  if(!orders.length){el.innerHTML='<div class="empty">No orders in this range</div>';return;}
+  el.innerHTML=orders.map(o=>{
+    const idx=S.orders.findIndex(x=>x===o);
+    return `<div class="order-card">
+      <div class="order-card-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <div>
+          <div style="font-size:13px;font-weight:600">${o.account}</div>
+          <div style="font-size:10px;color:var(--gray5);margin-top:1px">${fmtD(o.date)} · ${o.source}${o.rep?' · '+o.rep:''}${o.notes?' · '+o.notes:''}</div>
+          <div class="sku-summary">${(o.skus||[]).map(s=>`<span class="badge b-gray">${s.name} ×${s.qty}</span>`).join('')}</div>
+        </div>
+        ${o.rep?`<span class="badge b-blue">${o.rep}</span>`:''}
+        <span class="badge ${(o.skus||[]).length?'b-white':'b-gray'}">${(o.skus||[]).length} SKU${(o.skus||[]).length!==1?'s':''}</span>
+        <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:500;white-space:nowrap">${fmt(o.total)}</div>
+        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();delOrder(${idx})">×</button>
+      </div>
+      <div class="order-body">
+        <div class="col-hdr" style="grid-template-columns:minmax(0,1fr) 70px 70px 80px;margin-bottom:4px"><div>Product</div><div style="text-align:center">Qty</div><div style="text-align:right">Unit $</div><div style="text-align:right">Total</div></div>
+        ${(o.skus||[]).map(s=>`<div class="sku-row"><div style="color:#aaa">${s.name}</div><div style="text-align:center;color:var(--gray5)">${s.qty}</div><div style="text-align:right;color:var(--gray5)">${fmt(s.price)}</div><div style="text-align:right;font-weight:600">${fmt(s.qty*s.price)}</div></div>`).join('')}
+        <div style="text-align:right;padding-top:8px;font-family:'DM Mono',monospace;font-size:14px;font-weight:500">Total: ${fmt(o.total)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ACCOUNTS
+function renderAccounts(filter){
+  let accts=[...S.accounts];
+  if(filter==='hot') accts=accts.filter(a=>daysSince(a.lastOrder)<=14);
+  if(filter==='warm') accts=accts.filter(a=>{const d=daysSince(a.lastOrder);return d>14&&d<=60;});
+  if(filter==='cold') accts=accts.filter(a=>daysSince(a.lastOrder)>60);
+  accts.sort((a,b)=>daysSince(a.lastOrder)-daysSince(b.lastOrder));
+  const el=document.getElementById('accounts-list');
+  if(!accts.length){el.innerHTML='<div class="empty">No accounts in this filter</div>';return;}
+  el.innerHTML=accts.map(a=>{
+    const d=daysSince(a.lastOrder); const idx=S.accounts.indexOf(a);
+    return `<div class="acct-row" style="grid-template-columns:minmax(0,1fr) 90px 80px 100px 80px 50px">
+      <div><div style="font-size:13px;font-weight:600">${a.name}</div><div style="font-size:11px;color:var(--gray5)">${a.location||''}${a.rep?' · '+a.rep:''}${a.notes?' · '+a.notes:''}</div></div>
+      <div style="text-align:right;font-size:11px;color:var(--gray5)">${fmtD(a.lastOrder)}</div>
+      <div class="${daysCls(d)}" style="text-align:center;font-size:13px">${d===9999?'—':d+'d'}</div>
+      <div style="text-align:center">${statusBadge(d)}</div>
+      <div style="text-align:center;font-size:11px;color:var(--gray5)">${a.rep||'—'}</div>
+      <div style="text-align:right"><button class="btn btn-sm btn-danger" onclick="delAccount(${idx})">×</button></div>
+    </div>`;
+  }).join('');
+}
+
+// REPS
+function repPeriod(p, btn){
+  repPeriodFilter=p;
+  document.querySelectorAll('#page-reps .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderReps(p);
+}
+function renderReps(period){
+  const stats=buildRepStats(period);
+  const top3=stats.slice(0,3);
+  const colors=['#fbbf24','#94a3b8','#cd7f32'];
+  const medals=['#1','#2','#3'];
+  const pe=document.getElementById('rep-podium');
+  if(!top3.length){pe.innerHTML='<div class="empty" style="margin-bottom:16px">No rep data — log orders with rep names</div>';}
+  else{pe.innerHTML=`<div class="podium">${top3.map((r,i)=>`<div class="podium-card p${i+1}">
+    <div style="font-size:12px;font-weight:700;color:${colors[i]};margin-bottom:8px">${medals[i]}</div>
+    <div class="rep-avatar" style="margin:0 auto 8px;border-color:${colors[i]}">${initials(r.name)}</div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:3px">${r.name}</div>
+    ${r.territory?`<div style="font-size:11px;color:var(--gray5);margin-bottom:6px">${r.territory}</div>`:''}
+    <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:${colors[i]};margin-bottom:4px">${fmt(r.revenue)}</div>
+    <div style="font-size:11px;color:var(--gray4)">${r.orders} orders · ${r.accts} accts</div>
+    ${r.goal?`<div style="margin-top:8px;background:var(--gray2);border-radius:2px;height:4px;overflow:hidden"><div style="height:100%;background:${colors[i]};width:${Math.min(r.pct||0,100)}%"></div></div><div style="font-size:10px;color:var(--gray4);margin-top:3px">${r.pct||0}% of goal</div>`:''}
+  </div>`).join('')}</div>`;}
+  const el=document.getElementById('reps-list');
+  if(!stats.length){el.innerHTML='<div class="empty">No reps yet</div>';return;}
+  const maxRev=stats[0]?.revenue||1;
+  el.innerHTML=stats.map((r,i)=>{
+    const ro=S.reps.find(x=>x.name.toLowerCase()===r.name.toLowerCase());
+    const idx=S.reps.indexOf(ro);
+    return `<div class="rep-card">
+      <div class="rep-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <div class="rep-avatar">${initials(r.name)}</div>
+        <div><div style="font-size:13px;font-weight:600">${r.name}</div><div style="font-size:11px;color:var(--gray5)">${r.territory||'No territory'}</div><div class="rep-bar-bg"><div class="rep-bar" style="width:${Math.round(r.revenue/maxRev*100)}%"></div></div></div>
+        <div style="text-align:right;font-family:'DM Mono',monospace;font-size:15px;font-weight:500">${fmt(r.revenue)}</div>
+        <div style="text-align:center;font-size:12px;color:var(--gray5)">${r.orders}</div>
+        <div style="text-align:center;font-size:12px;color:var(--gray5)">${r.accts}</div>
+        <div style="text-align:center">${r.goal?`<span class="badge ${(r.pct||0)>=100?'b-green':(r.pct||0)>=50?'b-amber':'b-red'}">${r.pct||0}%</span>`:'<span class="badge b-gray">—</span>'}</div>
+        <div>${ro&&idx>=0?`<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();delRep(${idx})">×</button>`:''}</div>
+      </div>
+      <div class="rep-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:12px;margin-bottom:12px">
+          <div><div style="color:var(--gray4);margin-bottom:2px;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Phone</div><div>${r.phone||'—'}</div></div>
+          <div><div style="color:var(--gray4);margin-bottom:2px;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Territory</div><div>${r.territory||'—'}</div></div>
+          <div><div style="color:var(--gray4);margin-bottom:2px;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Monthly goal</div><div>${r.goal?fmt(r.goal):'Not set'}</div></div>
+        </div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray4);margin-bottom:6px">Recent orders</div>
+        ${getRepOrders(r.name,period).slice(0,5).map(o=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #0f0f0f;font-size:12px"><span style="color:#888">${o.account}</span><span style="color:var(--gray5)">${fmtD(o.date)}</span><span style="font-family:'DM Mono',monospace;font-weight:500">${fmt(o.total)}</span></div>`).join('')||'<div style="color:var(--gray3);font-size:12px">No orders this period</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// VENDORS
+function renderVendors(){
+  const vendors=[...S.vendors].reverse();
+  const el=document.getElementById('vendor-list');
+  if(!vendors.length){el.innerHTML='<div class="empty">No vendor days logged yet</div>';return;}
+  el.innerHTML=vendors.map((v,i)=>{
+    const idx=S.vendors.length-1-i;
+    return `<div class="vendor-row" style="grid-template-columns:90px minmax(0,1fr) 80px 100px 60px">
+      <div style="font-size:12px;color:var(--gray5)">${fmtD(v.date)}</div>
+      <div><div style="font-size:13px;font-weight:600">${v.account}</div>${v.notes?`<div style="font-size:11px;color:var(--gray5)">${v.notes}</div>`:''}</div>
+      <div style="font-size:12px;color:var(--gray5)">${v.rep||'—'}</div>
+      <div style="text-align:right;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:${v.lift>0?'var(--green)':'var(--gray4)'}">${v.lift>0?fmt(v.lift):'No order'}</div>
+      <div style="text-align:right"><button class="btn btn-sm btn-danger" onclick="delVendor(${idx})">×</button></div>
+    </div>`;
+  }).join('');
+}
+
+// SPARK
+function renderSpark(filter){
+  let sparks=[...S.spark];
+  if(filter!=='all') sparks=sparks.filter(s=>s.status===filter);
+  const el=document.getElementById('spark-list');
+  if(!sparks.length){el.innerHTML='<div class="empty">No candidates in this filter</div>';return;}
+  el.innerHTML=sparks.map(s=>{
+    const idx=S.spark.indexOf(s);
+    return `<div class="spark-row" style="grid-template-columns:minmax(0,1fr) 90px 110px 120px 60px">
+      <div><div style="font-size:13px;font-weight:600">${s.account}</div>${s.notes?`<div style="font-size:11px;color:var(--gray5)">${s.notes}</div>`:''}</div>
+      <div style="text-align:right;font-family:'DM Mono',monospace;font-size:14px;font-weight:500">${fmt(s.revenue)}</div>
+      <div style="text-align:center;font-size:12px;color:var(--gray5)">${s.rep||'—'}</div>
+      <div style="text-align:center">${sparkBadge(s.status)}</div>
+      <div style="text-align:right"><button class="btn btn-sm btn-danger" onclick="delSpark(${idx})">×</button></div>
+    </div>`;
+  }).join('');
+}
+
+// SKU LINES
+let tmpSkuLines=[];
+function addSkuLine(){
+  const name=document.getElementById('si-name').value.trim();
+  const qty=parseInt(document.getElementById('si-qty').value)||1;
+  const price=parseFloat(document.getElementById('si-price').value)||(S.skus.find(s=>s.name.toLowerCase()===name.toLowerCase())?.price||0);
+  if(!name) return;
+  tmpSkuLines.push({name,qty,price});
+  document.getElementById('si-name').value='';
+  document.getElementById('si-qty').value='';
+  document.getElementById('si-price').value='';
+  renderTmpSkus();
+}
+function removeTmpSku(i){tmpSkuLines.splice(i,1);renderTmpSkus();}
+function renderTmpSkus(){
+  const total=tmpSkuLines.reduce((s,l)=>s+l.qty*l.price,0);
+  document.getElementById('sku-total-preview').textContent=fmt(total);
+  document.getElementById('sku-lines-display').innerHTML=tmpSkuLines.map((l,i)=>`<div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid #111;font-size:12px">
+    <div style="flex:1;color:#aaa">${l.name}</div><div style="color:var(--gray5)">×${l.qty}</div>
+    <div style="color:var(--gray5)">${fmt(l.price)}/ea</div><div style="font-weight:600;min-width:55px;text-align:right">${fmt(l.qty*l.price)}</div>
+    <button class="btn btn-sm btn-danger" onclick="removeTmpSku(${i})" style="padding:1px 6px">×</button>
+  </div>`).join('');
+}
+
+// SAVE FUNCTIONS
+function saveOrder(){
+  const account=document.getElementById('o-acct').value.trim();
+  const rep=document.getElementById('o-rep').value.trim();
+  const date=document.getElementById('o-date').value||TODAY;
+  const source=document.getElementById('o-src').value;
+  const notes=document.getElementById('o-notes').value.trim();
+  if(!account) return;
+  if(document.getElementById('si-name').value.trim()) addSkuLine();
+  const total=tmpSkuLines.reduce((s,l)=>s+l.qty*l.price,0);
+  S.orders.push({account,rep,date,source,notes,skus:[...tmpSkuLines],total});
+  tmpSkuLines=[]; renderTmpSkus(); save('orders');
+  document.getElementById('o-acct').value=''; document.getElementById('o-rep').value='';
+  document.getElementById('o-notes').value=''; document.getElementById('o-date').value=TODAY;
+  const acct=S.accounts.find(a=>a.name.toLowerCase()===account.toLowerCase());
+  if(acct){acct.lastOrder=date;save('accounts');}
+  renderAll(); toggleEl('order-form');
+}
+function saveAccount(){
+  const name=document.getElementById('a-name').value.trim(); if(!name) return;
+  S.accounts.push({name,location:document.getElementById('a-loc').value.trim(),rep:document.getElementById('a-rep').value.trim(),lastOrder:document.getElementById('a-date').value,notes:document.getElementById('a-notes').value.trim()});
+  save('accounts'); ['a-name','a-loc','a-rep','a-date','a-notes'].forEach(id=>document.getElementById(id).value='');
+  renderAll(); toggleEl('acct-form');
+}
+function saveRep(){
+  const name=document.getElementById('r-name').value.trim(); if(!name) return;
+  S.reps.push({name,territory:document.getElementById('r-territory').value.trim(),phone:document.getElementById('r-phone').value.trim(),goal:parseFloat(document.getElementById('r-goal').value)||0});
+  save('reps'); ['r-name','r-territory','r-phone','r-goal'].forEach(id=>document.getElementById(id).value='');
+  renderAll(); toggleEl('rep-form');
+}
+function saveSpark(){
+  const account=document.getElementById('s-acct').value.trim(); if(!account) return;
+  S.spark.push({account,revenue:parseFloat(document.getElementById('s-rev').value)||0,rep:document.getElementById('s-rep').value.trim(),status:document.getElementById('s-st').value,notes:document.getElementById('s-notes').value.trim()});
+  save('spark'); ['s-acct','s-rev','s-rep','s-notes'].forEach(id=>document.getElementById(id).value='');
+  renderAll(); toggleEl('spark-form');
+}
+function saveVendor(){
+  const account=document.getElementById('v-acct').value.trim(); if(!account) return;
+  S.vendors.push({account,date:document.getElementById('v-date').value||TODAY,rep:document.getElementById('v-rep').value.trim(),lift:parseFloat(document.getElementById('v-lift').value)||0,notes:document.getElementById('v-notes').value.trim()});
+  save('vendors'); ['v-acct','v-rep','v-lift','v-notes'].forEach(id=>document.getElementById(id).value='');
+  renderAll(); toggleEl('vendor-form');
+}
+
+// DELETE
+function delOrder(i){S.orders.splice(i,1);save('orders');renderAll();}
+function delAccount(i){S.accounts.splice(i,1);save('accounts');renderAll();}
+function delRep(i){S.reps.splice(i,1);save('reps');renderAll();}
+function delSpark(i){S.spark.splice(i,1);save('spark');renderAll();}
+function delVendor(i){S.vendors.splice(i,1);save('vendors');renderAll();}
+
+// NAV
+function showPage(p, btn){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  btn.classList.add('active');
+}
+function toggleEl(id){const e=document.getElementById(id);if(e)e.style.display=e.style.display==='none'||!e.style.display?'block':'none';}
+function filterTab(section, f, btn){
+  document.querySelectorAll(`#page-${section} .tab`).forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(section==='orders') renderOrders(f);
+  if(section==='accounts') renderAccounts(f);
+  if(section==='spark') renderSpark(f);
+}
+
+load();
+</script>
+</body>
+</html>
